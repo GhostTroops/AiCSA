@@ -11,8 +11,10 @@ out
 /Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre/lib/rt.jar
 /Library/Java/JavaVirtualMachines/jdk1.8.0_72.jdk/Contents/Home/jre/lib/rt.jar
 ```
+## 反编译jar to java
+源码在src目录中
+不同的jar会根据hash构建一个源码目录，避免多个jar的源码冲突
 ```
 ./tools/doFernflower.sh $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3/coherence/lib/coherence.jar
-
 
 ```

@@ -1,0 +1,229 @@
+<html>
+<head>
+  <script src="static-bleve-mapping/js/mapping/type-mapping.js"></script>
+</head>
+<body>
+<div>
+  failures:
+  <pre id="failures">NONE</pre>
+</div>
+<hr/>
+<div>
+  tests:
+  <pre id="tests">(running...)</pre>
+</div>
+<script>
+var tests = [];
+var failures = [];
+
+function test(name, result) {
+  tests.push(name + "... " + (result ? "ok" : result));
+  document.getElementById("tests").innerHTML = tests.join("\n");
+
+  if (!result) {
+    failures.push(name + ": " + result);
+    document.getElementById("failures").innerHTML = failures.join("\n");
+  }
+}
+
+function echo(x) {
+  console.log(x);
+  return x;
+}
+
+test("bleveConvertFromTypeMapping({})",
+  JSON.stringify(bleveConvertFromTypeMapping({})) == "[]");
+
+test("bleveConvertToTypeMapping(bleveConvertFromTypeMapping({}))",
+  JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({}))) == "{}");
+
+test("bleveConvertToTypeMapping(bleveConvertFromTypeMapping(beer))",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+    'beer': {}
+  })))) == '{"beer":{"properties":{},"display_order":"0"}}');
+
+test("empty beer and brewery))",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+    'beer': {}, 'brewery': {}
+  })))) == '{"beer":{"properties":{},"display_order":"0"},"brewery":{"properties":{},"display_order":"1"}}');
+
+test("empty attrs)",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+    "beer":{"fields":[],"properties":{},"display_order":"0"},
+    "brewery":{"fields":[],"properties":{},"display_order":"1"}
+  })))) == '{"beer":{"display_order":"0","properties":{}},"brewery":{"display_order":"1","properties":{}}}');
+
+test("reverse display_order)",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+    "beer":{"fields":[],"properties":{},"display_order":"1"},
+    "brewery":{"fields":[],"properties":{},"display_order":"0"}
+  })))) == '{"brewery":{"display_order":"0","properties":{}},"beer":{"display_order":"1","properties":{}}}');
+
+test("display_order goes down to 0)",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[],
+     "properties":{
+     },
+     "display_order":"10"
+   }
+  })))) == '{"brewery":{"display_order":"0","properties":{}}}');
+
+test("one brewery field",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+     },
+     "display_order":"10"
+   }
+  })))) == '{"brewery":{"fields":[{"name":"description","display_order":"0"}],"display_order":"0","properties":{}}}');
+
+test("one brewery propertied field",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "address": {
+         "fields":[{"name":"addr"}]
+       }
+     },
+     "display_order":"10"
+   }
+  })))) == '{"brewery":{"fields":[{"name":"description","display_order":"0"}],"display_order":"0","properties":{"address":{"enabled":true,"dynamic":false,"properties":{},"fields":[{"name":"addr","display_order":"1"}]}}}}');
+
+test("bleveConverted brewery propertied field",
+  echo(JSON.stringify(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "address": {
+         "fields":[{"name":"addr"}]
+       }
+     },
+     "display_order":"10"
+   }
+  }))) == '[{"fields":[{"name":"description","_kind":"field"},{"name":"addr","property":"address","_kind":"field"}],"display_order":"10","_kind":"mappingType","name":"brewery","mappings":[]}]');
+
+test("1 brewery propertied field with two searchable names",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "address": {
+         "fields":[{"name":"addr"},{"name":"addrx"}]
+       }
+     },
+     "display_order":"10"
+   }
+  })))) == '{"brewery":{"fields":[{"name":"description","display_order":"0"}],"display_order":"0","properties":{"address":{"enabled":true,"dynamic":false,"properties":{},"fields":[{"name":"addr","display_order":"1"},{"name":"addrx","display_order":"2"}]}}}}');
+
+test("2 brewery propertied fields with two searchable names",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "address": {
+         "fields":[{"name":"addr"},{"name":"addrx"}]
+       },
+       "owner": {
+         "fields":[{"name":"owner"},{"name":"ownerx"}]
+       }
+     },
+     "display_order":"10"
+   }
+  })))))) == '{"brewery":{"fields":[{"name":"description","display_order":"0"}],"display_order":"0","properties":{"address":{"enabled":true,"dynamic":false,"properties":{},"fields":[{"name":"addr","display_order":"1"},{"name":"addrx","display_order":"2"}]},"owner":{"enabled":true,"dynamic":false,"properties":{},"fields":[{"name":"owner","display_order":"3"},{"name":"ownerx","display_order":"4"}]}}}}');
+
+test("beer and brewery propertied fields with two searchable names",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "address": {
+         "fields":[{"name":"addr"},{"name":"addrx"}]
+       },
+       "owner": {
+         "fields":[{"name":"owner"},{"name":"ownerx"}]
+       }
+     },
+     "display_order":"10"
+   },
+   "beer":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "ingredients": {
+         "fields":[{"name":"name"},{"name":"nombre"}]
+       },
+       "label": {
+         "fields":[{"name":"contents"},{"name":"text"}]
+       }
+     },
+     "display_order":"5"
+   }
+  })))))) == JSON.stringify({
+    "beer":{
+      "fields":[{"name":"description","display_order":"0"}],
+      "display_order":"0",
+      "properties":{
+        "ingredients":{
+          "enabled":true,"dynamic":false,
+          "properties":{},
+          "fields":[{"name":"name","display_order":"1"},{"name":"nombre","display_order":"2"}]
+        },
+        "label":{
+          "enabled":true,"dynamic":false,
+          "properties":{},
+          "fields":[{"name":"contents","display_order":"3"},{"name":"text","display_order":"4"}]
+        }
+      }
+    },
+    "brewery":{
+      "fields":[{"name":"description","display_order":"0"}],
+      "display_order":"1",
+      "properties":{
+        "address":{
+          "enabled":true,"dynamic":false,
+          "properties":{},
+          "fields":[{"name":"addr","display_order":"1"},{"name":"addrx","display_order":"2"}]
+        },
+        "owner":{
+          "enabled":true,"dynamic":false,
+          "properties":{},
+          "fields":[{"name":"owner","display_order":"3"},{"name":"ownerx","display_order":"4"}]
+        }}}}));
+
+test("1 brewery with 2 level nested properties",
+  echo(JSON.stringify(bleveConvertToTypeMapping(bleveConvertFromTypeMapping({
+   "brewery":{
+     "fields":[{"name":"description"}],
+     "properties":{
+       "address": {
+         "properties":{
+           "state":{
+             "fields":[{"name":"state"},{"name":"st"}]
+           }
+         }
+       }
+     }
+   }
+  })))) == JSON.stringify({
+    "brewery":{
+      "fields":[{"name":"description","display_order":"0"}],
+      "properties":{
+        "address":{
+          "display_order":"0",
+          "properties":{
+            "state":{
+              "enabled":true,"dynamic":false,
+              "properties":{},
+              "fields":[{"name":"state","display_order":"0"},{"name":"st","display_order":"1"}]
+            }
+          }
+        }
+      },
+      "display_order":"0"
+    }
+  }));
+</script>
+</body>
+</html>

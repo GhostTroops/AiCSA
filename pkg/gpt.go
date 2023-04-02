@@ -4,33 +4,43 @@ import (
 	"context"
 	"fmt"
 	util "github.com/hktalent/go-utils"
+	ratelimit "github.com/projectdiscovery/ratelimit"
 	"github.com/sashabaranov/go-openai"
+	"time"
+
 	"net/http"
 	"net/url"
 	"strings"
 )
 
 var (
-	GptApi *openai.Client
-	Prefix string
+	GptApi  *openai.Client
+	Prefix  string
+	Limiter *ratelimit.Limiter
 )
 
 func init() {
 	util.RegInitFunc(func() {
+		Limiter = ratelimit.New(util.Ctx_global, uint(util.GetValAsInt("LimitPerMinute", 20)), time.Minute)
 		Prefix = util.GetVal("Prefix")
-		config := openai.DefaultConfig(util.GetVal("ChatGPT_key"))
-		proxyUrl, err := url.Parse("socks5://127.0.0.1:7890")
-		if err != nil {
-			panic(err)
+		szProxy := util.GetVal("proxy")
+		chatGptKey := util.GetVal("api_key")
+		if szProxy == "" {
+			GptApi = openai.NewClient(chatGptKey)
+		} else {
+			config := openai.DefaultConfig(chatGptKey)
+			proxyUrl, err := url.Parse(szProxy)
+			if err != nil {
+				panic(err)
+			}
+			transport := &http.Transport{
+				Proxy: http.ProxyURL(proxyUrl),
+			}
+			config.HTTPClient = &http.Client{
+				Transport: transport,
+			}
+			GptApi = openai.NewClientWithConfig(config)
 		}
-		transport := &http.Transport{
-			Proxy: http.ProxyURL(proxyUrl),
-		}
-		config.HTTPClient = &http.Client{
-			Transport: transport,
-		}
-		//GptApi = openai.NewClient(util.GetVal("ChatGPT_key"))
-		GptApi = openai.NewClientWithConfig(config)
 	})
 }
 
@@ -69,13 +79,8 @@ openai.GPT3Ada 是 OpenAI 最新发布的 GPT-3 模型，它与 GPT-3 模型在�
 	还有一些其他的参数，如 Stop、N、Stream、LogProbs、Echo 等等，这些参数可以根据具体需求进行调整。
 */
 func GptNew(s string) (string, error) {
+	Limiter.Take()
 	ctx := context.Background()
-	//req := openai.CompletionRequest{
-	//	Model:     openai.GPT3Ada,
-	//	MaxTokens: 2048,
-	//	Prompt:    s,
-	//}
-	//resp, err := GptApi.CreateCompletion(ctx, req)
 	resp, err := GptApi.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
@@ -83,17 +88,29 @@ func GptNew(s string) (string, error) {
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
-					Content: Prefix + s,
+					Content: s,
 				},
 			},
 		},
 	)
 
+	/*
+			error, status code: 429,
+			message: Rate limit reached for default-gpt-3.5-turbo in organization org-xDa56WiVjCMJiVef9SrQOFPW on requests per min.
+			Limit: 20 / min. Please try again in 3s.
+			Contact support@openai.com if you continue to have issues.
+			Please add a payment method to your account to increase your rate limit.
+			Visit https://platform.openai.com/account/billing to add a payment method.
+
+		Completion error: error, status code: 400,
+		message: This model's maximum context length is 4097 tokens.
+		However, your messages resulted in 4424 tokens.
+		Please reduce the length of the messages.
+	*/
 	if err != nil {
-		fmt.Printf("Completion error: %v\n", err)
+		fmt.Printf("%s\nCompletion error: %v\n", s, err)
 		return "", err
 	}
 	fmt.Println(len(resp.Choices), resp.Choices[0].Message.Content)
 	return strings.TrimSpace(resp.Choices[0].Message.Content), err
-
 }

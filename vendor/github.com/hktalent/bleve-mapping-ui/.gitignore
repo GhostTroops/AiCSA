@@ -1,0 +1,11 @@
+#*
+*.sublime-*
+*~
+.#*
+.project
+.settings
+.DS_Store
+/sample
+/tmp
+/test
+/cmd/sample/sample
