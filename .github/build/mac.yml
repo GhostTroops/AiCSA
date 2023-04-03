@@ -1,0 +1,28 @@
+env:
+  - GO111MODULE=on
+
+project_name: AiCSA
+builds:
+  - id: AiCSA-darwin
+    ldflags:
+      - -s -w
+    binary: AiCSA
+    env:
+      - CGO_ENABLED=1
+    main: main.go
+    goos:
+      - darwin
+    goarch:
+      - amd64
+#    hooks:
+#      post:
+#        - upx --brute dist/51pwnPlatform-darwin_darwin_amd64_*/51pwnPlatform
+#        - ./.github/upx.sh
+
+archives:
+- format: zip
+  replacements:
+      darwin: macOS
+
+checksum:
+  name_template: "{{ .ProjectName }}-mac-checksums.txt"

@@ -7,6 +7,7 @@ import (
 	"github.com/hktalent/quic-go"
 	"github.com/hktalent/quic-go/http3"
 	"log"
+	"os"
 )
 
 var GTls *tls.Config
@@ -76,4 +77,20 @@ func RunHttp3(addr string, router *gin.Engine) (err error) {
 		//router.RunTLS(addr, certFile, keyFile)
 	}()
 	return
+}
+
+func GetChildDirs(s string) *[]string {
+	files, err := os.ReadDir(s)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	var dirs []string
+	for _, file := range files {
+		if file.IsDir() {
+			dirs = append(dirs, file.Name())
+		}
+	}
+	return &dirs
 }

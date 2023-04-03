@@ -1,0 +1,27 @@
+env:
+  - GO111MODULE=on
+
+project_name: AiCSA
+builds:
+  - id: AiCSA-darwin
+    ldflags:
+      - -s -w
+    binary: AiCSA
+    env:
+      - CGO_ENABLED=1
+    main: main.go
+    goos:
+      - darwin
+    goarch:
+      - arm64
+#    hooks:
+#      post:
+#        - ./.github/upx.sh
+
+archives:
+- format: zip
+  replacements:
+      darwin: macOS
+
+checksum:
+  name_template: "{{ .ProjectName }}-mac-arm64-checksums.txt"

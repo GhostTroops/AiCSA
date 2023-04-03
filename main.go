@@ -15,7 +15,8 @@ var static1 embed.FS
 
 func main() {
 	util.DoInitAll()
-	os.Args = []string{"", "src/a611b13e2af8684075349c35ed6a4147", "src/cd0a7d64c4b34ae5d9ffab8b94c9db7f"}
+	os.Args = []string{""}
+	os.Args = append(os.Args, *pkg.GetChildDirs("src")...)
 	// control + c 退出时做些什么
 	//util.NewExit().RegClose(func() error {
 	//	return nil

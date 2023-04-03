@@ -4,8 +4,9 @@
 
 
 # feature
-- 相同 jar、相同 java 文件，GPT 只执行一次，结果保留在索引库中
+- 相同 jar、相同 java 文件，chatGPT ( GPT-4 ) 只执行一次，结果保留在索引库中,所以不用担心多次重复执行的问题
 - 免费的 chatGPT 限速20次/分钟，付费用户可以通过修改 config/config.json 调整频率
+- 文件大于 3500 字节自动拆分发送给 chatGPT,避免过长的文件导致 chatGPT 无法处理
 
 # web UI
 ```
@@ -31,5 +32,7 @@ out
 - 不同的 ja r会根据hash构建一个源码目录，避免多个jar的源码冲突
 
 ```
+find $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3 -type f -name "*.jar" | xargs -I {} ./tools/doFernflower.sh {}
+ls $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3/coherence/lib/*.jar|xargs -I {} ./tools/doFernflower.sh {}
 ./tools/doFernflower.sh $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3/coherence/lib/coherence.jar
 ```
