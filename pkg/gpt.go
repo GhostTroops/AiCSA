@@ -19,10 +19,16 @@ var (
 
 func init() {
 	util.RegInitFunc(func() {
+		a1 := strings.Split(util.GetVal("api_key"), ",")
+		c001 = make(chan struct{}, 3*len(a1)) // 并发控制
+
+		// 定义一个全局限流器
+		//var limiter = rate.NewLimiter(rate.Every(time.Minute/20), 1)
+
 		// 保险起见，每分钟只能调用 18 次
 		Limiter = ratelimit.New(util.Ctx_global, uint(util.GetValAsInt("LimitPerMinute", 18)), time.Minute)
 		Prefix = util.GetVal("Prefix")
-		gptApiPool = NewGptApiPool()
+		gptApiPool = NewGptApiPool(&a1)
 	})
 }
 
@@ -59,6 +65,18 @@ openai.GPT3Ada 是 OpenAI 最新发布的 GPT-3 模型，它与 GPT-3 模型在�
 		• 1+：惩罚力度较强，文本应该能够更好地与上下文配合。
 
 	还有一些其他的参数，如 Stop、N、Stream、LogProbs、Echo 等等，这些参数可以根据具体需求进行调整。
+
+		error, status code: 429,
+			message: Rate limit reached for default-gpt-3.5-turbo in organization org-xDa56WiVjCMJiVef9SrQOFPW on requests per min.
+			Limit: 20 / min. Please try again in 3s.
+			Contact support@openai.com if you continue to have issues.
+			Please add a payment method to your account to increase your rate limit.
+			Visit https://platform.openai.com/account/billing to add a payment method.
+
+		Completion error: error, status code: 400,
+		message: This model's maximum context length is 4097 tokens.
+		However, your messages resulted in 4424 tokens.
+		Please reduce the length of the messages.
 */
 func GptNew(s string) (string, error) {
 	//Limiter.Take()
@@ -75,26 +93,13 @@ func GptNew(s string) (string, error) {
 			},
 		},
 	)
-
-	/*
-			error, status code: 429,
-			message: Rate limit reached for default-gpt-3.5-turbo in organization org-xDa56WiVjCMJiVef9SrQOFPW on requests per min.
-			Limit: 20 / min. Please try again in 3s.
-			Contact support@openai.com if you continue to have issues.
-			Please add a payment method to your account to increase your rate limit.
-			Visit https://platform.openai.com/account/billing to add a payment method.
-
-		Completion error: error, status code: 400,
-		message: This model's maximum context length is 4097 tokens.
-		However, your messages resulted in 4424 tokens.
-		Please reduce the length of the messages.
-	*/
 	if err != nil {
 		s1 := fmt.Sprintf("Completion error: %v\n", err)
-		fmt.Println(s1)
-		if strings.Contains(s1, "your rate limit") {
+		if strings.Contains(s1, "Limit: 20 / min") {
 			time.Sleep(3 * time.Second)
+			return GptNew(s)
 		}
+		fmt.Println(s1)
 		return "", err
 	}
 	fmt.Println(len(resp.Choices), resp.Choices[0].Message.Content)

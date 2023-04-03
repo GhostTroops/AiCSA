@@ -5,7 +5,6 @@ import (
 	"github.com/sashabaranov/go-openai"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 )
 
@@ -50,12 +49,12 @@ func (this *GptApiPool) initGptApi(chatGptKey string) *openai.Client {
 	return GptApi
 }
 
-func NewGptApiPool() *GptApiPool {
+func NewGptApiPool(apiKey *[]string) *GptApiPool {
 	x := &GptApiPool{
 		Look: new(sync.Mutex),
 		Pos:  0,
 	}
-	chatGptKey := strings.Split(util.GetVal("api_key"), ",")
+	chatGptKey := *apiKey
 	x.GptApi = make([]*openai.Client, len(chatGptKey))
 	for i := 0; i < len(chatGptKey); i++ {
 		x.GptApi[i] = x.initGptApi(chatGptKey[i])

@@ -17,7 +17,7 @@ func ReDoCode(s, data, szHashCode string) {
 
 var (
 	regM1 = regexp.MustCompile("\\s*\n\\s*")
-	c001  = make(chan struct{}, 20) // 并发控制
+	c001  chan struct{}
 )
 
 // 拆分大小
@@ -32,7 +32,7 @@ szHashCode 项目hash
 func DoOneJava(s, data, szHashCode string) {
 	data = regM1.ReplaceAllString(data, "")
 	if a, ok := QueryIndexData(s, szHashCode); ok {
-		log.Println("文件"+s+",已经处理过:", len(a))
+		fmt.Printf("文件 %s,已经处理过:%d\r", s, len(a))
 		//for _, x := range a {
 		//	fmt.Println(x.SecInfo)
 		//}
@@ -81,8 +81,16 @@ func DoOneJava(s, data, szHashCode string) {
 					ReDoCode(s, szOldData, szHashCode)
 				}
 			} else {
+				n09 := len(a)
+				var szFirst = ""
+
 				for i, x1 := range a {
-					if s1, err := GptNew(fmt.Sprintf("先不分析等我发送完该文件内容,%s,第%d段代码:%s", sz11, i+1, x1)); nil == err {
+					if 0 == i {
+						szFirst = fmt.Sprintf("接下来我将 %s 拆分为 %d 部分发给你，直到全部给你发完才开始分析", sz11, n09)
+					} else {
+						szFirst = ""
+					}
+					if s1, err := GptNew(fmt.Sprintf("%s %s,第 %d/%d 段代码:%s", szFirst, sz11, i+1, n09, x1)); nil == err {
 						if 0 < len(s1) {
 							//aR = append(aR, s1)
 							fmt.Println(s1)
@@ -92,7 +100,7 @@ func DoOneJava(s, data, szHashCode string) {
 					}
 				}
 
-				if s1, err := GptNew(fmt.Sprintf(Prefix, "前面多个拆分发送的"+sz11)); nil == err {
+				if s1, err := GptNew(fmt.Sprintf("分析前面多个拆分发送的 %s java代码存在哪些安全风险、易受到攻击的脆弱代码,如何验证、确认他们", sz11)); nil == err {
 					if 0 < len(s1) {
 						aR = append(aR, s1)
 						fmt.Println(s1)

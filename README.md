@@ -32,6 +32,7 @@ out
 ```
 
 ## config/config.json example
+LimitPerMinute: 建议 api key 个数 * 3
 ```
 {
   "proxy": "socks5://127.0.0.1:7890",
@@ -42,6 +43,13 @@ out
   "Prefix": "用中文问答，分析%s java代码存在哪些安全风险,如何验证、确认他们",
   "CheckRpt": true
 }
+```
+
+# How build
+```
+go get -u ./...
+go mod vendor
+go build -o AiCSA main.go
 ```
 
 ## 反编译jar to java
