@@ -6,7 +6,6 @@
 *.gzip
 *.br
 /src/
-/config/config.json
 /.ipCc/
 .DbCache
 /data/
