@@ -17,7 +17,6 @@ package scorch
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sync"
 	"sync/atomic"
@@ -57,18 +56,21 @@ type Scorch struct {
 	eligibleForRemoval   []uint64        // Index snapshot epochs that are safe to GC.
 	ineligibleForRemoval map[string]bool // Filenames that should not be GC'ed yet.
 
-	numSnapshotsToKeep int
-	closeCh            chan struct{}
-	introductions      chan *segmentIntroduction
-	persists           chan *persistIntroduction
-	merges             chan *segmentMerge
-	introducerNotifier chan *epochWatcher
-	persisterNotifier  chan *epochWatcher
-	rootBolt           *bolt.DB
-	asyncTasks         sync.WaitGroup
+	numSnapshotsToKeep       int
+	rollbackRetentionFactor  float64
+	checkPoints              []*snapshotMetaData
+	rollbackSamplingInterval time.Duration
+	closeCh                  chan struct{}
+	introductions            chan *segmentIntroduction
+	persists                 chan *persistIntroduction
+	merges                   chan *segmentMerge
+	introducerNotifier       chan *epochWatcher
+	persisterNotifier        chan *epochWatcher
+	rootBolt                 *bolt.DB
+	asyncTasks               sync.WaitGroup
 
 	onEvent      func(event Event)
-	onAsyncError func(err error)
+	onAsyncError func(err error, path string)
 
 	forceMergeRequestCh chan *mergerCtrl
 
@@ -183,7 +185,7 @@ func (s *Scorch) fireEvent(kind EventKind, dur time.Duration) {
 
 func (s *Scorch) fireAsyncError(err error) {
 	if s.onAsyncError != nil {
-		s.onAsyncError(err)
+		s.onAsyncError(err, s.path)
 	}
 	atomic.AddUint64(&s.stats.TotOnErrors, 1)
 }
@@ -290,6 +292,24 @@ func (s *Scorch) openBolt() error {
 		if t > 0 {
 			s.numSnapshotsToKeep = t
 		}
+	}
+
+	s.rollbackSamplingInterval = RollbackSamplingInterval
+	if v, ok := s.config["rollbackSamplingInterval"]; ok {
+		var t time.Duration
+		if t, err = parseToTimeDuration(v); err != nil {
+			return fmt.Errorf("rollbackSamplingInterval parse err: %v", err)
+		}
+		s.rollbackSamplingInterval = t
+	}
+
+	s.rollbackRetentionFactor = RollbackRetentionFactor
+	if v, ok := s.config["rollbackRetentionFactor"]; ok {
+		var r float64
+		if r, ok = v.(float64); ok {
+			return fmt.Errorf("rollbackRetentionFactor parse err: %v", err)
+		}
+		s.rollbackRetentionFactor = r
 	}
 
 	typ, ok := s.config["spatialPlugin"].(string)
@@ -538,16 +558,18 @@ func (s *Scorch) diskFileStats(rootSegmentPaths map[string]struct{}) (uint64,
 	uint64, uint64) {
 	var numFilesOnDisk, numBytesUsedDisk, numBytesOnDiskByRoot uint64
 	if s.path != "" {
-		finfos, err := ioutil.ReadDir(s.path)
+		files, err := os.ReadDir(s.path)
 		if err == nil {
-			for _, finfo := range finfos {
-				if !finfo.IsDir() {
-					numBytesUsedDisk += uint64(finfo.Size())
-					numFilesOnDisk++
-					if rootSegmentPaths != nil {
-						fname := s.path + string(os.PathSeparator) + finfo.Name()
-						if _, fileAtRoot := rootSegmentPaths[fname]; fileAtRoot {
-							numBytesOnDiskByRoot += uint64(finfo.Size())
+			for _, f := range files {
+				if !f.IsDir() {
+					if finfo, err := f.Info(); err == nil {
+						numBytesUsedDisk += uint64(finfo.Size())
+						numFilesOnDisk++
+						if rootSegmentPaths != nil {
+							fname := s.path + string(os.PathSeparator) + finfo.Name()
+							if _, fileAtRoot := rootSegmentPaths[fname]; fileAtRoot {
+								numBytesOnDiskByRoot += uint64(finfo.Size())
+							}
 						}
 					}
 				}
@@ -713,6 +735,16 @@ func (s *Scorch) unmarkIneligibleForRemoval(filename string) {
 
 func init() {
 	registry.RegisterIndexType(Name, NewScorch)
+}
+
+func parseToTimeDuration(i interface{}) (time.Duration, error) {
+	switch v := i.(type) {
+	case string:
+		return time.ParseDuration(v)
+
+	default:
+		return 0, fmt.Errorf("expects a duration string")
+	}
 }
 
 func parseToInteger(i interface{}) (int, error) {

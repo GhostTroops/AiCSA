@@ -1,0 +1,39 @@
+*{outline: none;}
+html, body { margin: 0; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;line-height: 1.5;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;background: #fff;}
+video {width:100%;height:auto;object-fit: cover;}
+video:fullscreen {object-fit: contain }
+.video {margin:0 auto;padding:0 auto;width: 100%;height: 100%;overflow: hidden;}
+#myQrcode img,#myQrcode img{margin:0 auto;padding:0 auto}
+.video .fullscreenbtn{position: absolute;bottom:0;right:0;text-align:center;z-index: 999;padding:10px;width:64px;font-size:2em;cursor: pointer;background: none;border:none;color:#fff;}
+#closebtn{float: right;color:#333;text-decoration: none;font-size: 125%;line-height: 1.2;}
+#roomurl{width:100%;overflow:hidden;border-radius: 5px;border:1px solid #dcdcdc;background: #efefef;font-size: 80%;padding: 0;margin: 0;}
+.message{width: 200px; overflow:hidden;position: fixed; bottom: 10px; right:10px;box-sizing: border-box; padding:10px;background: #fff; border-radius: 5px;z-index: 1000;}
+#tooManyParticipants{background: #c0392b;color: #fff;display: none;}
+#myCtn > div{margin:0;padding: 0}
+.rounded{width:33vw;
+-webkit-box-shadow: 0 8px 6px -6px black;
+-moz-box-shadow: 0 8px 6px -6px black;
+box-shadow: 0 8px 6px -6px black;}
+.input-group-text >input{margin: 0 15px}
+html,body,.container,.row{background:#fff;width:100vw;margin: 0;}
+.video{
+   /* -moz-transform:scaleX(-1);
+    -webkit-transform:scaleX(-1);
+    -o-transform:scaleX(-1);
+    transform:scaleX(-1);
+    transform: rotateY(180deg); */
+    /*IE*/
+    /*filter:FlipH;*/
+}
+#logId{display: none}
+
+
+.video{
+    background: #f52003;
+    border-radius: 6px
+    transition-property: background, border-radius;
+    transition-duration: 1s;
+    transition-timing-function: linear;}
+.video:hover {
+    background: #0cf104;
+    border-radius: 20%;}

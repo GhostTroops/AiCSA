@@ -47,7 +47,7 @@ type QueryResult struct {
 // 初始化库
 func init() {
 	util.RegInitFunc(func() {
-		CreateIndex4Name(LBS, NetCat)
+		//CreateIndex4Name(LBS, NetCat)
 		SaveThread = make(chan struct{}, util.GetValAsInt("thread", 16))
 	})
 }

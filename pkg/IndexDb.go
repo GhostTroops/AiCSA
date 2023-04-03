@@ -4,7 +4,6 @@ import (
 	"fmt"
 	util "github.com/hktalent/go-utils"
 	"github.com/hktalent/go-utils/bigdb/blevExp"
-	"reflect"
 	"time"
 )
 
@@ -36,19 +35,10 @@ func SaveIndexData(javaCodePath, secInfo, jarHash string) {
 func Copy2IndexData(m *map[string]interface{}) *IndexData {
 	// 定义一个 IndexData 类型的结构体变量
 	var indexData IndexData
-	// 遍历 map 中的所有键值对，并通过反射机制将值转化为 IndexData 中对应字段的类型
-	for k, v := range *m {
-		if field, ok := reflect.TypeOf(indexData).FieldByName(k); ok {
-			fv := reflect.ValueOf(&indexData).Elem().FieldByName(field.Name)
-			if fv.Type().Kind() == reflect.String {
-				fv.SetString(fmt.Sprintf("%v", v))
-			} else if fv.Type().Kind() == reflect.Struct && fv.Type().Name() == "Time" {
-				if t, err := time.Parse("2006-01-02 15:04:05", fmt.Sprintf("%v", v)); err == nil {
-					fv.Set(reflect.ValueOf(t))
-				}
-			}
-		}
+	if data, err := util.Json.Marshal(m); nil == err {
+		util.Json.Unmarshal(data, &indexData)
 	}
+
 	return &indexData
 }
 

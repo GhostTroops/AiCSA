@@ -37,6 +37,8 @@ var (
 )
 
 type chunkedContentCoder struct {
+	bytesWritten uint64 // atomic access to this variable, moved to top to correct alignment issues on ARM, 386 and 32-bit MIPS.
+
 	final     []byte
 	chunkSize uint64
 	currChunk uint64
@@ -45,7 +47,6 @@ type chunkedContentCoder struct {
 	compressed []byte // temp buf for snappy compression
 
 	w                io.Writer
-	bytesWritten     uint64 // atomic access to this variable
 	progressiveWrite bool
 
 	chunkMeta    []MetaData

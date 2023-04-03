@@ -21,7 +21,8 @@ var (
 
 func init() {
 	util.RegInitFunc(func() {
-		Limiter = ratelimit.New(util.Ctx_global, uint(util.GetValAsInt("LimitPerMinute", 20)), time.Minute)
+		// 保险起见，每分钟只能调用 18 次
+		Limiter = ratelimit.New(util.Ctx_global, uint(util.GetValAsInt("LimitPerMinute", 18)-2), time.Minute)
 		Prefix = util.GetVal("Prefix")
 		szProxy := util.GetVal("proxy")
 		chatGptKey := util.GetVal("api_key")
@@ -108,7 +109,11 @@ func GptNew(s string) (string, error) {
 		Please reduce the length of the messages.
 	*/
 	if err != nil {
-		fmt.Printf("%s\nCompletion error: %v\n", s, err)
+		s1 := fmt.Sprintf("Completion error: %v\n", err)
+		fmt.Println(s1)
+		if strings.Contains(s1, "your rate limit") {
+			time.Sleep(4 * time.Second)
+		}
 		return "", err
 	}
 	fmt.Println(len(resp.Choices), resp.Choices[0].Message.Content)

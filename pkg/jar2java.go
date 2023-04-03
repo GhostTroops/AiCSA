@@ -17,7 +17,11 @@ func ReDoCode(s, data, szHashCode string) {
 
 var (
 	regM1 = regexp.MustCompile("\\s*\n\\s*")
+	c001  = make(chan struct{}, 20)
 )
+
+// 拆分大小
+const MaxSplit = 3500
 
 /*
 DoOneJava
@@ -29,30 +33,36 @@ func DoOneJava(s, data, szHashCode string) {
 	data = regM1.ReplaceAllString(data, "")
 	if a, ok := QueryIndexData(s, szHashCode); ok {
 		log.Println("文件"+s+",已经处理过:", len(a))
-		for _, x := range a {
-			fmt.Println(x.SecInfo)
-		}
+		//for _, x := range a {
+		//	fmt.Println(x.SecInfo)
+		//}
 	} else {
+		c001 <- struct{}{}
+		Limiter.Take()
 		util.Wg.Add(1)
 		util.DefaultPool.Submit(func() {
 			defer util.Wg.Done()
+			defer func() {
+				<-c001
+			}()
+			szOldData := data
 			var a = []string{data}
-			if 3000 < len(data) {
-				n1 := len(data) / 3000
-				if 0 < len(data)%3000 {
+			if MaxSplit < len(data) {
+				n1 := len(data) / MaxSplit
+				if 0 < len(data)%MaxSplit {
 					n1++
 				}
 				a = make([]string, n1)
 				x0 := 0
 				for {
-					if 3000 <= len(data) {
-						a[x0] = data[0:3000]
+					if MaxSplit <= len(data) {
+						a[x0] = data[0:MaxSplit]
 					} else {
 						a[x0] = data
 						break
 					}
-					data = data[3000:]
-					if 0 == len(data) || 3000 > len(a[x0]) {
+					data = data[MaxSplit:]
+					if 0 == len(data) || MaxSplit > len(a[x0]) {
 						break
 					}
 					x0++
@@ -68,7 +78,7 @@ func DoOneJava(s, data, szHashCode string) {
 						fmt.Println(s1)
 					}
 				} else { // 记录该文件，便于下一次重复再次尝试
-					ReDoCode(s, data, szHashCode)
+					ReDoCode(s, szOldData, szHashCode)
 				}
 			} else {
 				for i, x1 := range a {
@@ -77,16 +87,18 @@ func DoOneJava(s, data, szHashCode string) {
 							//aR = append(aR, s1)
 							fmt.Println(s1)
 						}
+					} else {
+						log.Println(err)
 					}
 				}
 
-				if s1, err := GptNew(fmt.Sprintf(Prefix, sz11)); nil == err {
+				if s1, err := GptNew(fmt.Sprintf(Prefix, "前面拆分发送的"+sz11)); nil == err {
 					if 0 < len(s1) {
 						aR = append(aR, s1)
 						fmt.Println(s1)
 					}
 				} else { // 记录该文件，便于下一次重复再次尝试
-					ReDoCode(s, data, szHashCode)
+					ReDoCode(s, szOldData, szHashCode)
 				}
 			}
 			if 0 < len(aR) {

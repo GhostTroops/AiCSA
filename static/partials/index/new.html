@@ -1,0 +1,32 @@
+<ol class="breadcrumb" style="margin-bottom: 0px;">
+  <li><span class="glyphicon glyphicon-book"/></li>
+  <li><a href="/indexes">Indexes</a></li>
+  <li>New</li>
+</ol>
+
+<div ng-show="ierrorMessage" class="alert alert-danger ng-cloak" role="alert"> {{ierrorMessage}}
+</div>
+
+<form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="inputIndexName" class="col-sm-2 control-label">Name</label>
+    <div class="col-sm-10">
+      <input ng-model="newIndexName" type="text" class="form-control" id="inputIndexName" placeholder="identifier">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label"></label>
+    <div class="col-sm-10 indexMappingContainer">
+      <div ng-include="'/static-bleve-mapping/partials/mapping/index-mapping.html'"/>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button ng-click="newIndexNamed(newIndexName)" type="submit" class="btn btn-primary pull-right">Create</button>
+    </div>
+  </div>
+</form>
