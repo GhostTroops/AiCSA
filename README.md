@@ -7,6 +7,7 @@
 - 相同 jar、相同 java 文件，chatGPT ( GPT-4 ) 只执行一次，结果保留在索引库中,所以不用担心多次重复执行的问题
 - 免费的 chatGPT 限速20次/分钟，付费用户可以通过修改 config/config.json 调整频率
 - 文件大于 3500 字节自动拆分发送给 chatGPT,避免过长的文件导致 chatGPT 无法处理
+- 支持 若干个 openai api key，提高并发能力
 
 # web UI
 ```
