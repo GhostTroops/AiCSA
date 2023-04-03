@@ -1,8 +1,7 @@
 [![Tweet](https://img.shields.io/twitter/url/http/Hktalent3135773.svg?style=social)](https://twitter.com/intent/follow?screen_name=Hktalent3135773) [![Follow on Twitter](https://img.shields.io/twitter/follow/Hktalent3135773.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=Hktalent3135773) [![GitHub Followers](https://img.shields.io/github/followers/hktalent.svg?style=social&label=Follow)](https://github.com/hktalent/)
 # Ai(ChatGPT-4) Code Security Audit
 
-<img width="1106" alt="image" src="https://user-images.githubusercontent.com/18223385/229397981-b0eab8a6-9635-4520-8e1a-d11e1c3ffcfe.png">
-
+<img width="800" alt="image" src="https://user-images.githubusercontent.com/18223385/229501108-1c415db2-d455-40a4-9772-57af1c563532.png">
 
 # feature
 - 相同 jar、相同 java 文件，chatGPT ( GPT-4 ) 只执行一次，结果保留在索引库中,所以不用担心多次重复执行的问题
@@ -78,7 +77,7 @@ find $HOME/Downloads/outImg -name '*.png' | sort | sed 's/.*/"&"/' | tr '\n' ' '
 ```
 
 ## 💖Star
-[![Stargazers over time](https://starchart.cc/hktalent/AiCSA.svg)](https://starchart.cc/hktalent/AiCSA)
+[![Stargazers over time](https://starchart.cc/hktalent/AiCSA_pub.svg)](https://starchart.cc/hktalent/AiCSA_pub)
 
 # Donation
 | Wechat Pay | AliPay | Paypal | BTC Pay |BCH Pay |
