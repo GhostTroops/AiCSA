@@ -1,3 +1,4 @@
+[![Tweet](https://img.shields.io/twitter/url/http/Hktalent3135773.svg?style=social)](https://twitter.com/intent/follow?screen_name=Hktalent3135773) [![Follow on Twitter](https://img.shields.io/twitter/follow/Hktalent3135773.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=Hktalent3135773) [![GitHub Followers](https://img.shields.io/github/followers/hktalent.svg?style=social&label=Follow)](https://github.com/hktalent/)
 # Ai(ChatGPT-4) Code Security Audit
 
 <img width="1106" alt="image" src="https://user-images.githubusercontent.com/18223385/229397981-b0eab8a6-9635-4520-8e1a-d11e1c3ffcfe.png">
@@ -8,6 +9,8 @@
 - 免费的 chatGPT 限速20次/分钟，付费用户可以通过修改 config/config.json 调整频率
 - 文件大于 3500 字节自动拆分发送给 chatGPT,避免过长的文件导致 chatGPT 无法处理
 - 支持 若干个 openai api key，提高并发能力
+- 基于大数据索引存储结果
+- 提供 HTTP/2.0 HTTP/3.0 web 界面
 
 # web UI
 ```
@@ -34,7 +37,7 @@ out
   "proxy": "socks5://127.0.0.1:7890",
   "LimitPerMinute": 6,
   "org": "org-xx",
-  "api_key": "sk-xxx",
+  "api_key": "sk-xxx,sk-xxx2",
   "Prefix": "用中文问答，分析%s java代码存在哪些安全风险,如何验证、确认他们",
   "CheckRpt": true
 }
@@ -58,3 +61,12 @@ brew update && brew upgrade ffmpeg
 
 find $HOME/Downloads/outImg -name '*.png' | sort | sed 's/.*/"&"/' | tr '\n' ' ' | xargs ffmpeg -r 30 -i - -c:v libx264 -pix_fmt yuv420p output.mp4
 ```
+
+## 💖Star
+[![Stargazers over time](https://starchart.cc/hktalent/AiCSA.svg)](https://starchart.cc/hktalent/AiCSA)
+
+# Donation
+| Wechat Pay | AliPay | Paypal | BTC Pay |BCH Pay |
+| --- | --- | --- | --- | --- |
+|<img src=https://raw.githubusercontent.com/hktalent/myhktools/main/md/wc.png>|<img width=166 src=https://raw.githubusercontent.com/hktalent/myhktools/main/md/zfb.png>|[paypal](https://www.paypal.me/pwned2019) **miracletalent@gmail.com**|<img width=166 src=https://raw.githubusercontent.com/hktalent/myhktools/main/md/BTC.png>|<img width=166 src=https://raw.githubusercontent.com/hktalent/myhktools/main/md/BCH.jpg>|
+
