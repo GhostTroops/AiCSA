@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// curl -v -sk https://127.0.0.1:8080/api/AiCSA/b1f4bdaab215468b0ca7821236eda2e3d4e7f48d -o- |jq
 func CreateHttp3Server(static1 embed.FS) {
 	var router *gin.Engine
 	gin.SetMode(gin.ReleaseMode)

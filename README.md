@@ -28,6 +28,18 @@ out
 /Library/Java/JavaVirtualMachines/jdk1.8.0_72.jdk/Contents/Home/jre/lib/rt.jar
 ```
 
+## config/config.json example
+```
+{
+  "proxy": "socks5://127.0.0.1:7890",
+  "LimitPerMinute": 6,
+  "org": "org-xx",
+  "api_key": "sk-xxx",
+  "Prefix": "用中文问答，分析%s java代码存在哪些安全风险,如何验证、确认他们",
+  "CheckRpt": true
+}
+```
+
 ## 反编译jar to java
 - 源码将自动保存在 src 目录中
 - 不同的 ja r会根据hash构建一个源码目录，避免多个jar的源码冲突
