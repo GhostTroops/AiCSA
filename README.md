@@ -1,5 +1,8 @@
 # Ai(ChatGPT-4) Code Security Audit
 
+<img width="1106" alt="image" src="https://user-images.githubusercontent.com/18223385/229397981-b0eab8a6-9635-4520-8e1a-d11e1c3ffcfe.png">
+
+
 # feature
 - 相同 jar、相同 java 文件，GPT 只执行一次，结果保留在索引库中
 - 免费的 chatGPT 限速20次/分钟，付费用户可以通过修改 config/config.json 调整频率
