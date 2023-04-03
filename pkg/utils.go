@@ -8,6 +8,7 @@ import (
 	"github.com/hktalent/quic-go/http3"
 	"log"
 	"os"
+	"path"
 )
 
 var GTls *tls.Config
@@ -86,10 +87,10 @@ func GetChildDirs(s string) *[]string {
 		return nil
 	}
 
-	var dirs []string
+	var dirs = make([]string, 0, 10)
 	for _, file := range files {
 		if file.IsDir() {
-			dirs = append(dirs, file.Name())
+			dirs = append(dirs, path.Join(s, file.Name()))
 		}
 	}
 	return &dirs

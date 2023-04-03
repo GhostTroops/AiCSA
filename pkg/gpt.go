@@ -8,40 +8,21 @@ import (
 	"github.com/sashabaranov/go-openai"
 	"time"
 
-	"net/http"
-	"net/url"
 	"strings"
 )
 
 var (
-	GptApi  *openai.Client
-	Prefix  string
-	Limiter *ratelimit.Limiter
+	gptApiPool *GptApiPool
+	Prefix     string
+	Limiter    *ratelimit.Limiter
 )
 
 func init() {
 	util.RegInitFunc(func() {
 		// 保险起见，每分钟只能调用 18 次
-		Limiter = ratelimit.New(util.Ctx_global, uint(util.GetValAsInt("LimitPerMinute", 18)-2), time.Minute)
+		Limiter = ratelimit.New(util.Ctx_global, uint(util.GetValAsInt("LimitPerMinute", 18)), time.Minute)
 		Prefix = util.GetVal("Prefix")
-		szProxy := util.GetVal("proxy")
-		chatGptKey := util.GetVal("api_key")
-		if szProxy == "" {
-			GptApi = openai.NewClient(chatGptKey)
-		} else {
-			config := openai.DefaultConfig(chatGptKey)
-			proxyUrl, err := url.Parse(szProxy)
-			if err != nil {
-				panic(err)
-			}
-			transport := &http.Transport{
-				Proxy: http.ProxyURL(proxyUrl),
-			}
-			config.HTTPClient = &http.Client{
-				Transport: transport,
-			}
-			GptApi = openai.NewClientWithConfig(config)
-		}
+		gptApiPool = NewGptApiPool()
 	})
 }
 
@@ -80,9 +61,9 @@ openai.GPT3Ada 是 OpenAI 最新发布的 GPT-3 模型，它与 GPT-3 模型在�
 	还有一些其他的参数，如 Stop、N、Stream、LogProbs、Echo 等等，这些参数可以根据具体需求进行调整。
 */
 func GptNew(s string) (string, error) {
-	Limiter.Take()
+	//Limiter.Take()
 	ctx := context.Background()
-	resp, err := GptApi.CreateChatCompletion(
+	resp, err := gptApiPool.GetGptApi().CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
 			Model: openai.GPT3Dot5Turbo,
@@ -112,7 +93,7 @@ func GptNew(s string) (string, error) {
 		s1 := fmt.Sprintf("Completion error: %v\n", err)
 		fmt.Println(s1)
 		if strings.Contains(s1, "your rate limit") {
-			time.Sleep(4 * time.Second)
+			time.Sleep(3 * time.Second)
 		}
 		return "", err
 	}

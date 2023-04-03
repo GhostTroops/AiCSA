@@ -17,7 +17,7 @@ func ReDoCode(s, data, szHashCode string) {
 
 var (
 	regM1 = regexp.MustCompile("\\s*\n\\s*")
-	c001  = make(chan struct{}, 20)
+	c001  = make(chan struct{}, 20) // 并发控制
 )
 
 // 拆分大小
@@ -37,8 +37,8 @@ func DoOneJava(s, data, szHashCode string) {
 		//	fmt.Println(x.SecInfo)
 		//}
 	} else {
-		c001 <- struct{}{}
 		Limiter.Take()
+		c001 <- struct{}{}
 		util.Wg.Add(1)
 		util.DefaultPool.Submit(func() {
 			defer util.Wg.Done()

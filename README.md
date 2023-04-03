@@ -36,3 +36,12 @@ find $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3 -type f -name "*.ja
 ls $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3/coherence/lib/*.jar|xargs -I {} ./tools/doFernflower.sh {}
 ./tools/doFernflower.sh $HOME/MyWork/vulScanPro/tools/weblogic/weblogic12.2.1.3/coherence/lib/coherence.jar
 ```
+
+# Tips
+- Mac OS 所有子目录图片转换为mp4
+```
+brew install ffmpeg
+brew update && brew upgrade ffmpeg
+
+find $HOME/Downloads/outImg -name '*.png' | sort | sed 's/.*/"&"/' | tr '\n' ' ' | xargs ffmpeg -r 30 -i - -c:v libx264 -pix_fmt yuv420p output.mp4
+```
