@@ -13,8 +13,14 @@
 - 提供 HTTP/2.0 HTTP/3.0 web 界面
 
 # web UI
+<img width="715" alt="image" src="https://user-images.githubusercontent.com/18223385/229487667-acdfdfdb-6125-4806-9666-09ecd349e82a.png">
+
 ```
-https://127.0.0.1:8080/indexes/
+mkdir -p src config
+vi config/config.json
+ ./AiCSA  
+ 
+open https://127.0.0.1:8080/indexes/
 ```
 
 # How Test
