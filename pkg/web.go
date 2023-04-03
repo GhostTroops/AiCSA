@@ -3,6 +3,7 @@ package pkg
 import (
 	"embed"
 	"github.com/gin-gonic/gin"
+	util "github.com/hktalent/go-utils"
 	"github.com/hktalent/go-utils/bigdb/blevExp"
 	"net/http"
 )
@@ -20,5 +21,5 @@ func CreateHttp3Server(static1 embed.FS) {
 
 	blevExp.DoIndexDb(router, static1, blevExp.DataDir, func(r001 *gin.Engine) {})
 
-	RunHttp3(":8080", router)
+	RunHttp3(":"+util.GetVal("HttpPort"), router)
 }

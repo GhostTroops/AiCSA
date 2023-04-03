@@ -36,6 +36,7 @@ out
 {
   "proxy": "socks5://127.0.0.1:7890",
   "LimitPerMinute": 6,
+  "HttpPort": 8080,
   "org": "org-xx",
   "api_key": "sk-xxx,sk-xxx2",
   "Prefix": "用中文问答，分析%s java代码存在哪些安全风险,如何验证、确认他们",
