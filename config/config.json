@@ -1,0 +1,10 @@
+{
+  "proxy": "socks5://127.0.0.1:7890",
+  "LimitPerMinute": 20,
+  "thread": 64,
+  "HttpPort": 8080,
+  "org": "org-xx",
+  "api_key": "sk-xx",
+  "Prefix": "用中文问答，分析java代码存在哪些安全风险、易受到攻击的脆弱代码,如何验证、确认他们",
+  "CheckRpt": true
+}
