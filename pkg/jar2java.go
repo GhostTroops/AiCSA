@@ -92,7 +92,7 @@ func DoOneJava(s, data, szHashCode string) {
 					}
 				}
 
-				if s1, err := GptNew(fmt.Sprintf(Prefix, "前面拆分发送的"+sz11)); nil == err {
+				if s1, err := GptNew(fmt.Sprintf(Prefix, "前面多个拆分发送的"+sz11)); nil == err {
 					if 0 < len(s1) {
 						aR = append(aR, s1)
 						fmt.Println(s1)
