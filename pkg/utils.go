@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 )
 
 var GTls *tls.Config
@@ -90,7 +91,9 @@ func GetChildDirs(s string) *[]string {
 	var dirs = make([]string, 0, 10)
 	for _, file := range files {
 		if file.IsDir() {
-			dirs = append(dirs, path.Join(s, file.Name()))
+			if strings.HasPrefix(file.Name(), "apache") {
+				dirs = append(dirs, path.Join(s, file.Name()))
+			}
 		}
 	}
 	return &dirs

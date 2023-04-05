@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	util "github.com/hktalent/go-utils"
-	ratelimit "github.com/projectdiscovery/ratelimit"
+	"github.com/projectdiscovery/ratelimit"
 	"github.com/sashabaranov/go-openai"
 	"time"
 
@@ -99,9 +99,9 @@ func GptNew(s string) (string, error) {
 			time.Sleep(3 * time.Second)
 			return GptNew(s)
 		}
-		fmt.Println(s1)
+		//fmt.Println(s1)
 		return "", err
 	}
-	fmt.Println(len(resp.Choices), resp.Choices[0].Message.Content)
+	//fmt.Println(len(resp.Choices), resp.Choices[0].Message.Content)
 	return strings.TrimSpace(resp.Choices[0].Message.Content), err
 }
