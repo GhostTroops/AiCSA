@@ -18,10 +18,17 @@ func ReDoCode(s, data, szHashCode string) {
 var (
 	regM1 = regexp.MustCompile("\\s*\n\\s*")
 	c001  chan struct{}
+	regM2 *regexp.Regexp
 )
 
 // 拆分大小
 const MaxSplit = 3500
+
+func init() {
+	util.RegInitFunc(func() {
+		regM2 = regexp.MustCompile(util.GetVal("sourceExt"))
+	})
+}
 
 /*
 DoOneJava
@@ -132,7 +139,8 @@ func WalkDir(s string) {
 		}
 
 		// 如果该路径是一个文件且扩展名为.java，则读取该文件的内容
-		if !info.IsDir() && filepath.Ext(path) == ".java" {
+
+		if !info.IsDir() && regM2.Match([]byte(path)) {
 			data, err := os.ReadFile(path)
 			if err != nil {
 				return err
