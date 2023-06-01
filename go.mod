@@ -3,7 +3,7 @@ module github.com/hktalent/AiCSA
 go 1.19
 
 require (
-	github.com/gin-gonic/gin v1.9.0
+	github.com/gin-gonic/gin v1.9.1
 	github.com/hktalent/go-utils v0.0.0-20230403015246-cc2e6da4774e
 	github.com/hktalent/quic-go v0.0.0-20230109145426-616d4470b202
 	github.com/projectdiscovery/ratelimit v0.0.6
@@ -33,7 +33,7 @@ require (
 	github.com/blevesearch/zapx/v13 v13.3.7 // indirect
 	github.com/blevesearch/zapx/v14 v14.3.7 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.9 // indirect
-	github.com/bytedance/sonic v1.8.7 // indirect
+	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/c4milo/unpackit v1.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
@@ -48,12 +48,13 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/elazarl/go-bindata-assetfs v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-contrib/static v0.0.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.12.0 // indirect
+	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
@@ -85,7 +86,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/klauspost/reedsolomon v1.11.7 // indirect
-	github.com/leodido/go-urn v1.2.2 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/lucas-clemente/quic-go v0.31.1 // indirect
 	github.com/lufia/plan9stats v0.0.0-20230326075908-cb1d2100619a // indirect
@@ -93,7 +94,7 @@ require (
 	github.com/marten-seemann/qpack v0.3.0 // indirect
 	github.com/marten-seemann/qtls-go1-18 v0.1.4 // indirect
 	github.com/marten-seemann/qtls-go1-19 v0.1.2 // indirect
-	github.com/mattn/go-isatty v0.0.18 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -103,7 +104,7 @@ require (
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.2 // indirect
 	github.com/panjf2000/ants/v2 v2.7.2 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pion/datachannel v1.5.5 // indirect
 	github.com/pion/dtls/v2 v2.2.6 // indirect
@@ -150,12 +151,12 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
 	golang.org/x/mod v0.9.0 // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/djherbis/times.v1 v1.3.0 // indirect
