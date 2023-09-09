@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/hktalent/go-utils v0.0.0-20230909111515-bda41a21b0dd
 	github.com/projectdiscovery/ratelimit v0.0.9
 	github.com/quic-go/quic-go v0.38.1
 	github.com/sashabaranov/go-openai v1.15.2
@@ -78,7 +79,6 @@ require (
 	github.com/hktalent/PipelineHttp v0.0.0-20230815034820-7ba060930550 // indirect
 	github.com/hktalent/bleve-mapping-ui v0.4.1 // indirect
 	github.com/hktalent/go-update v0.0.0-20230526022740-3a2ce0d34057 // indirect
-	github.com/hktalent/go-utils v0.0.0-20230909111515-bda41a21b0dd // indirect
 	github.com/hktalent/htmlquery v0.0.0-20230303073607-1fbec5a16112 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
