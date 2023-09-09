@@ -5,7 +5,7 @@
   "HttpPort": 8080,
   "sourceExt": "\\.c$|\\.cpp$|\\.cxx$|\\.cc$|\\.java$|\\.py$|\\.js$|\\.rb$|\\.swift$|\\.m$|\\.mm$|\\.php$|\\.go$|\\.kt$|\\.rs$|\\.dart$|\\.lua$|\\.ts$|\\.scala$|\\.sh$|\\.pl$|\\.r$|\\.jl$",
   "org": "org-xDa56WiVjCMJiVef9SrQOFPW",
-  "api_key": "sk-",
+  "api_key": "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,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,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,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,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",
   "Prefix": "用中文问答，分析java代码存在哪些安全风险、易受到攻击的脆弱代码,给出验证风险、脆弱的示例代码",
   "CheckRpt": true
 }

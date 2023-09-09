@@ -1,8 +1,12 @@
+// SPDX-FileCopyrightText: 2023 The Pion community <https://pion.ly>
+// SPDX-License-Identifier: MIT
+
 // Package twcc provides interceptors to implement transport wide congestion control.
 package twcc
 
 import (
 	"math"
+	"sort"
 
 	"github.com/pion/rtcp"
 )
@@ -41,53 +45,51 @@ func (r *Recorder) Record(mediaSSRC uint32, sequenceNumber uint16, arrivalTime i
 	if sequenceNumber < 0x0fff && (r.lastSequenceNumber&0xffff) > 0xf000 {
 		r.cycles += 1 << 16
 	}
-	r.receivedPackets = insertSorted(r.receivedPackets, pktInfo{
-		sequenceNumber: r.cycles | uint32(sequenceNumber),
-		arrivalTime:    arrivalTime,
-	})
+	pkt := pktInfo{r.cycles | uint32(sequenceNumber), arrivalTime}
+	r.receivedPackets = append(r.receivedPackets, pkt)
 	r.lastSequenceNumber = sequenceNumber
 }
 
-func insertSorted(list []pktInfo, element pktInfo) []pktInfo {
-	if len(list) == 0 {
-		return append(list, element)
-	}
-	for i := len(list) - 1; i >= 0; i-- {
-		if list[i].sequenceNumber < element.sequenceNumber {
-			list = append(list, pktInfo{})
-			copy(list[i+2:], list[i+1:])
-			list[i+1] = element
-			return list
-		}
-		if list[i].sequenceNumber == element.sequenceNumber {
-			list[i] = element
-			return list
-		}
-	}
-	// element.sequenceNumber is between 0 and first ever received sequenceNumber
-	return append([]pktInfo{element}, list...)
+// PacketsHeld returns the number of received packets currently held by the recorder
+func (r *Recorder) PacketsHeld() int {
+	return len(r.receivedPackets)
 }
 
 // BuildFeedbackPacket creates a new RTCP packet containing a TWCC feedback report.
 func (r *Recorder) BuildFeedbackPacket() []rtcp.Packet {
-	feedback := newFeedback(r.senderSSRC, r.mediaSSRC, r.fbPktCnt)
-	r.fbPktCnt++
-	if len(r.receivedPackets) < 2 {
-		r.receivedPackets = []pktInfo{}
-		return []rtcp.Packet{feedback.getRTCP()}
+	// sort received packets by sequence number, with earliest arrivalTime first in cases of duplicates
+	canBuild := false
+	sort.Slice(r.receivedPackets, func(i, j int) bool {
+		if r.receivedPackets[i].sequenceNumber == r.receivedPackets[j].sequenceNumber {
+			return r.receivedPackets[i].arrivalTime < r.receivedPackets[j].arrivalTime
+		}
+		canBuild = true // need at least 2 non-duplicate packets
+		return r.receivedPackets[i].sequenceNumber < r.receivedPackets[j].sequenceNumber
+	})
+	if !canBuild {
+		return nil
 	}
 
-	feedback.setBase(uint16(r.receivedPackets[0].sequenceNumber&0xffff), r.receivedPackets[0].arrivalTime)
+	feedback := newFeedback(r.senderSSRC, r.mediaSSRC, r.fbPktCnt)
+	r.fbPktCnt++
+	feedback.setBase(
+		uint16(r.receivedPackets[0].sequenceNumber&0xffff),
+		r.receivedPackets[0].arrivalTime,
+	)
 
 	var pkts []rtcp.Packet
-	for _, pkt := range r.receivedPackets {
-		ok := feedback.addReceived(uint16(pkt.sequenceNumber&0xffff), pkt.arrivalTime)
-		if !ok {
-			pkts = append(pkts, feedback.getRTCP())
-			feedback = newFeedback(r.senderSSRC, r.mediaSSRC, r.fbPktCnt)
-			r.fbPktCnt++
-			feedback.addReceived(uint16(pkt.sequenceNumber&0xffff), pkt.arrivalTime)
+	var prevSN uint32
+	for i, pkt := range r.receivedPackets {
+		if i == 0 || pkt.sequenceNumber != prevSN {
+			ok := feedback.addReceived(uint16(pkt.sequenceNumber&0xffff), pkt.arrivalTime)
+			if !ok {
+				pkts = append(pkts, feedback.getRTCP())
+				feedback = newFeedback(r.senderSSRC, r.mediaSSRC, r.fbPktCnt)
+				r.fbPktCnt++
+				feedback.addReceived(uint16(pkt.sequenceNumber&0xffff), pkt.arrivalTime)
+			}
 		}
+		prevSN = pkt.sequenceNumber
 	}
 	r.receivedPackets = []pktInfo{}
 	pkts = append(pkts, feedback.getRTCP())

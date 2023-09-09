@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 The Pion community <https://pion.ly>
+// SPDX-License-Identifier: MIT
+
 package sctp
 
 import (
@@ -66,7 +69,7 @@ func (c *chunkForwardTSN) unmarshal(raw []byte) error {
 		s := chunkForwardTSNStream{}
 
 		if err := s.unmarshal(c.raw[offset:]); err != nil {
-			return fmt.Errorf("%w: %v", ErrMarshalStreamFailed, err)
+			return fmt.Errorf("%w: %v", ErrMarshalStreamFailed, err) //nolint:errorlint
 		}
 
 		c.streams = append(c.streams, s)
@@ -85,7 +88,7 @@ func (c *chunkForwardTSN) marshal() ([]byte, error) {
 	for _, s := range c.streams {
 		b, err := s.marshal()
 		if err != nil {
-			return nil, fmt.Errorf("%w: %v", ErrMarshalStreamFailed, err)
+			return nil, fmt.Errorf("%w: %v", ErrMarshalStreamFailed, err) //nolint:errorlint
 		}
 		out = append(out, b...)
 	}

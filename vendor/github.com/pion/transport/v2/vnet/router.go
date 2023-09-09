@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 The Pion community <https://pion.ly>
+// SPDX-License-Identifier: MIT
+
 package vnet
 
 import (
@@ -325,11 +328,7 @@ func (r *Router) addNIC(nic NIC) error {
 		r.nics[ip.String()] = nic
 	}
 
-	if err = nic.setRouter(r); err != nil {
-		return err
-	}
-
-	return nil
+	return nic.setRouter(r)
 }
 
 // AddRouter adds a child Router.

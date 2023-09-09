@@ -6,6 +6,7 @@
 
 # How install cmd
 ```
+go get -u ./...
 go build -o ppHttp cmd/main.go
 ln -s $PWD/ppHttp $HOME/go/bin/ppHttp
 # go install github.com/hktalent/PipelineHttp/cmd/@latest

@@ -1,11 +1,10 @@
-// Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// SPDX-FileCopyrightText: 2013 The Go Authors. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: 2022 The Pion community <https://pion.ly>
+// SPDX-License-Identifier: MIT
 
-// Modifications copyright 2022 The Pion Authors, governed by
-// the MIT license.
-
-//go:build !amd64 && !ppc64 && !ppc64le && !arm64 && !arm
+//go:build (!amd64 && !ppc64 && !ppc64le && !arm64 && !arm) || gccgo
+// +build !amd64,!ppc64,!ppc64le,!arm64,!arm gccgo
 
 // Package xor provides utility functions used by other Pion
 // packages. Generic arch.
@@ -16,8 +15,10 @@ import (
 	"unsafe"
 )
 
-const wordSize = int(unsafe.Sizeof(uintptr(0)))                                                                                            // nolint:gosec
-const supportsUnaligned = runtime.GOARCH == "386" || runtime.GOARCH == "ppc64" || runtime.GOARCH == "ppc64le" || runtime.GOARCH == "s390x" // nolint:gochecknoglobals
+const (
+	wordSize          = int(unsafe.Sizeof(uintptr(0)))                                                                                   // nolint:gosec
+	supportsUnaligned = runtime.GOARCH == "386" || runtime.GOARCH == "ppc64" || runtime.GOARCH == "ppc64le" || runtime.GOARCH == "s390x" // nolint:gochecknoglobals
+)
 
 func isAligned(a *byte) bool {
 	return uintptr(unsafe.Pointer(a))%uintptr(wordSize) == 0
@@ -25,6 +26,7 @@ func isAligned(a *byte) bool {
 
 // XorBytes xors the bytes in a and b. The destination should have enough
 // space, otherwise xorBytes will panic. Returns the number of bytes xor'd.
+//
 //revive:disable-next-line
 func XorBytes(dst, a, b []byte) int {
 	n := len(a)

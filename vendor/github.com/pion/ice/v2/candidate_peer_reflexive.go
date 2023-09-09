@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 The Pion community <https://pion.ly>
+// SPDX-License-Identifier: MIT
+
 // Package ice ...
 //
 //nolint:dupl
@@ -36,9 +39,8 @@ func NewCandidatePeerReflexive(config *CandidatePeerReflexiveConfig) (*Candidate
 	}
 
 	candidateID := config.CandidateID
-	candidateIDGenerator := newCandidateIDGenerator()
 	if candidateID == "" {
-		candidateID = candidateIDGenerator.Generate()
+		candidateID = globalCandidateIDGenerator.Generate()
 	}
 
 	return &CandidatePeerReflexive{
@@ -56,6 +58,7 @@ func NewCandidatePeerReflexive(config *CandidatePeerReflexiveConfig) (*Candidate
 				Address: config.RelAddr,
 				Port:    config.RelPort,
 			},
+			remoteCandidateCaches: map[AddrPort]Candidate{},
 		},
 	}, nil
 }

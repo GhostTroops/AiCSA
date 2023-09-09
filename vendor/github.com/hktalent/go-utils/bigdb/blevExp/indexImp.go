@@ -551,7 +551,7 @@ func GetDoc(szIndex, docID string) *QueryResult {
 				newval = n
 			}
 		case indexxx.DateTimeField:
-			d, err := field.DateTime()
+			d, _, err := field.DateTime()
 			if err == nil {
 				newval = d.Format(time.RFC3339Nano)
 			}

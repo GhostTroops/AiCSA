@@ -90,8 +90,11 @@ func (p *Pool) purgeStaleWorkers(ctx context.Context) {
 			break
 		}
 
+		var isDormant bool
 		p.lock.Lock()
-		staleWorkers := p.workers.staleWorkers(p.options.ExpiryDuration)
+		staleWorkers := p.workers.refresh(p.options.ExpiryDuration)
+		n := p.Running()
+		isDormant = n == 0 || n == len(staleWorkers)
 		p.lock.Unlock()
 
 		// Notify obsolete workers to stop.
@@ -104,10 +107,8 @@ func (p *Pool) purgeStaleWorkers(ctx context.Context) {
 		}
 
 		// There might be a situation where all workers have been cleaned up(no worker is running),
-		// or another case where the pool capacity has been Tuned up,
-		// while some invokers still get stuck in "p.cond.Wait()",
-		// then it ought to wake all those invokers.
-		if p.Running() == 0 || (p.Waiting() > 0 && p.Free() > 0) {
+		// while some invokers still are stuck in "p.cond.Wait()", then we need to awake those invokers.
+		if isDormant && p.Waiting() > 0 {
 			p.cond.Broadcast()
 		}
 	}
@@ -193,9 +194,9 @@ func NewPool(size int, options ...Option) (*Pool, error) {
 		if size == -1 {
 			return nil, ErrInvalidPreAllocSize
 		}
-		p.workers = newWorkerArray(queueTypeLoopQueue, size)
+		p.workers = newWorkerQueue(queueTypeLoopQueue, size)
 	} else {
-		p.workers = newWorkerArray(queueTypeStack, 0)
+		p.workers = newWorkerQueue(queueTypeStack, 0)
 	}
 
 	p.cond = sync.NewCond(p.lock)
@@ -275,6 +276,14 @@ func (p *Pool) Release() {
 	if !atomic.CompareAndSwapInt32(&p.state, OPENED, CLOSED) {
 		return
 	}
+
+	if p.stopPurge != nil {
+		p.stopPurge()
+		p.stopPurge = nil
+	}
+	p.stopTicktock()
+	p.stopTicktock = nil
+
 	p.lock.Lock()
 	p.workers.reset()
 	p.lock.Unlock()
@@ -288,13 +297,6 @@ func (p *Pool) ReleaseTimeout(timeout time.Duration) error {
 	if p.IsClosed() || (!p.options.DisablePurge && p.stopPurge == nil) || p.stopTicktock == nil {
 		return ErrPoolClosed
 	}
-
-	if p.stopPurge != nil {
-		p.stopPurge()
-		p.stopPurge = nil
-	}
-	p.stopTicktock()
-	p.stopTicktock = nil
 	p.Release()
 
 	endTime := time.Now().Add(timeout)
@@ -365,14 +367,8 @@ func (p *Pool) retrieveWorker() (w worker) {
 			return
 		}
 
-		var nw int
-		if nw = p.Running(); nw == 0 { // awakened by the scavenger
-			p.lock.Unlock()
-			spawnWorker()
-			return
-		}
 		if w = p.workers.detach(); w == nil {
-			if nw < p.Cap() {
+			if p.Free() > 0 {
 				p.lock.Unlock()
 				spawnWorker()
 				return

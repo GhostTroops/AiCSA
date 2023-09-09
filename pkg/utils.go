@@ -4,8 +4,8 @@ import (
 	"crypto/tls"
 	"github.com/gin-gonic/gin"
 	util "github.com/hktalent/go-utils"
-	"github.com/hktalent/quic-go"
-	"github.com/hktalent/quic-go/http3"
+	"github.com/quic-go/quic-go"
+	"github.com/quic-go/quic-go/http3"
 	"log"
 	"os"
 	"path"
@@ -64,13 +64,13 @@ func RunHttp3(addr string, router *gin.Engine) (err error) {
 	util.Wg.Add(1)
 	go func() {
 		defer util.Wg.Done()
-		h3s := http3.Server{
+		h3s := NewMyServer(&http3.Server{
 			Addr:            addr,
 			EnableDatagrams: true,
 			Handler:         router.Handler(),
 			TLSConfig:       GTls,
 			QuicConfig:      &quic.Config{EnableDatagrams: true},
-		}
+		})
 		//  && !util.GetValAsBool("devDebug")
 		if err := h3s.ListenServe(); nil != err {
 			log.Println("HTTP/3.0 ListenAndServe ", err)
