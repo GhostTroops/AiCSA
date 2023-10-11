@@ -87,7 +87,7 @@ func (h *DocGetHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				newval = n
 			}
 		case index.DateTimeField:
-			d,_, err := field.DateTime()
+			d, err := field.DateTime()
 			if err == nil {
 				newval = d.Format(time.RFC3339Nano)
 			}
