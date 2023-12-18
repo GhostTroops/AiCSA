@@ -648,7 +648,7 @@ func LoadAndHighlightFields(hit *search.DocumentMatch, req *SearchRequest,
 									value = num
 								}
 							case index.DateTimeField:
-								datetime,_, err := docF.DateTime()
+								datetime, err := docF.DateTime()
 								if err == nil {
 									value = datetime.Format(time.RFC3339)
 								}
