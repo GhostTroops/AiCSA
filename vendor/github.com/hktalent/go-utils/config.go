@@ -15,6 +15,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"io"
 	"os/exec"
 	"reflect"
 	"regexp"
@@ -351,7 +352,7 @@ func DoCmd(args ...string) (string, error) {
 	cmd := exec.Command(args[0], args[1:]...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout // 标准输出
-	cmd.Stderr = &stderr // 标准错误
+	cmd.Stderr = io.Discard // 标准错误
 	err := cmd.Run()
 	outStr, errStr := doReadBuff(&stdout), doReadBuff(&stderr)
 	// out, err := cmd.CombinedOutput()

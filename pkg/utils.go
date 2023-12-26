@@ -42,8 +42,8 @@ func SetSSL() {
 
 // https://github.com/quic-go/quic-go/wiki/UDP-Receive-Buffer-Size
 func SetUdpReceiveBufferSize() {
-	util.DoCmd("sysctl", "-w", "net.core.rmem_max=2500000 2>/dev/null")
-	util.DoCmd("sysctl", "-w", "kern.ipc.maxsockbuf=3014656 2>/dev/null")
+	util.DoCmd("sysctl", "-w", "net.core.rmem_max=2500000")
+	util.DoCmd("sysctl", "-w", "kern.ipc.maxsockbuf=3014656") // , "2>/dev/null"
 }
 
 func RunHttp3(addr string, router *gin.Engine) (err error) {
